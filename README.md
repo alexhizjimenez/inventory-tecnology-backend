@@ -57,34 +57,40 @@ src
 
 ## 📊 Modelo de Datos
 
-### Producto
+### Products
 
 | Campo | Tipo |
 |---------|---------|
 | id | UUID |
-| nombre | String |
+| name | String |
+| description | String |
 | sku | String |
-| stockDisponible | Integer |
-| categoria | String |
+| stock | Integer |
+| category | String |
+| createdAt | LocalDateTime |
 
-### Colaborador
+### Collaborators
 
 | Campo | Tipo |
 |---------|---------|
 | id | UUID |
-| nombre | String |
+| fullName | String |
 | area | String |
-| puesto | String |
+| position | String |
+| createdAt | LocalDateTime |
 
-### Asignación
+### Assignments
 
 | Campo | Tipo |
 |---------|---------|
 | id | UUID |
-| productoId | UUID |
-| colaboradorId | UUID |
-| fechaEntrega | LocalDate |
-| estado | ACTIVO / DEVUELTO |
+| productId | UUID |
+| collaboratorId | UUID |
+| deliveryDate | LocalDate |
+| status | ACTIVE / RETURNED |
+| createdAt | LocalDateTime |
+
+
 
 ---
 
