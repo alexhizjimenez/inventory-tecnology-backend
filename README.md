@@ -43,11 +43,12 @@ src
 │      └── out
 │   └── services
 ├── infrastructure
-│   └── in
-│       └── rest
-│           └── dto
-│   └── out
-│       └── persistence
+│   └── adapter
+│       └── in
+│           └── rest
+│               └── dto
+│       └── out
+│           └── persistence
 │
 └── InventoryTecnologyApplication
 ```
