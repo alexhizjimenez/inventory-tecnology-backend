@@ -15,6 +15,7 @@ import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Assignment;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Collaborator;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Product;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.StatusAssignment;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class AssignmentService implements CreateAssignmentUseCase, GetAssignment
     private final CollaboratorRepositoryPort collaboratorRepositoryPort;
 
     @Override
+    @Transactional
     public Assignment create(Assignment assignment) {
         Product product = productRepositoryPort.findById(assignment.getProduct().getId())
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + assignment.getProduct().getId()));
@@ -61,6 +63,7 @@ public class AssignmentService implements CreateAssignmentUseCase, GetAssignment
     }
 
     @Override
+    @Transactional
     public Assignment returnedProductToAssignment(UUID id, StatusAssignment status) {
         Assignment assignment = getById(id);
         assignment.setStatus(status);
