@@ -15,6 +15,7 @@ public class ProductResponse {
     private String name;
     private String description;
     private String sku;
+    private Integer stock;
     private StatusProduct status;
     private CategoryProduct category;
     private LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class ProductResponse {
                 .name(product.getName())
                 .description(product.getDescription())
                 .sku(product.getSku())
+                .stock(product.getStock())
                 .status(product.getStatus())
                 .category(product.getCategory())
                 .createdAt(product.getCreatedAt())

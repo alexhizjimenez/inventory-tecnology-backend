@@ -33,6 +33,7 @@ public class ProductController {
                 .description(request.getDescription())
                 .category(request.getCategory())
                 .sku(request.getSku())
+                .stock(request.getStock())
                 .build();
         Product saved = createProductUseCase.create(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(ProductResponse.from(saved));

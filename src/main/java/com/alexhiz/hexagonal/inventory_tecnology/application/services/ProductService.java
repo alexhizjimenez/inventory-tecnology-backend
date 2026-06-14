@@ -4,7 +4,9 @@ import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.product.Cre
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.product.GetProductUseCase;
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.product.ListProductUseCase;
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.ProductRepositoryPort;
+import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductInvalidStockException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductNotFoundException;
+import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductWithOutStockException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ public class ProductService implements CreateProductUseCase, GetProductUseCase, 
 
     @Override
     public Product create(Product product) {
+        if(product.getStock() <= 0) {
+            throw new ProductInvalidStockException("Product stock invalid" + product.getSku());
+        }
         return productRepositoryPort.save(product);
     }
 

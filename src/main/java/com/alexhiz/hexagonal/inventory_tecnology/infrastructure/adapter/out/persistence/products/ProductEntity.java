@@ -6,6 +6,7 @@ import com.alexhiz.hexagonal.inventory_tecnology.domain.model.CategoryProduct;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.StatusProduct;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +38,10 @@ public class ProductEntity {
     private StatusProduct status;
 
     @Column(nullable = false)
+    @Min(0)
+    private Integer stock;
+
+    @Column(nullable = false)
     private CategoryProduct category;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -47,6 +52,7 @@ public class ProductEntity {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.status == null ) this.status = StatusProduct.ACTIVE;
+        if (this.stock == null ) this.stock = 0;
     }
 
 }
