@@ -1,4 +1,4 @@
-package com.alexhiz.hexagonal.inventory_tecnology.infrastructure.adapter.out.persistence;
+package com.alexhiz.hexagonal.inventory_tecnology.infrastructure.adapter.out.persistence.products;
 
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Product;
 import org.springframework.stereotype.Component;
