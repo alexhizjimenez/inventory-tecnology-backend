@@ -111,7 +111,7 @@ src
 - El stock nunca puede ser negativo. [x]
 - Una asignación debe estar asociada a un colaborador válido. [x]
 - Al devolver un producto, el stock aumenta automáticamente. [x]
-- Todas las operaciones críticas son transaccionales.
+- Todas las operaciones críticas son transaccionales. [x]
 
 ---
 
