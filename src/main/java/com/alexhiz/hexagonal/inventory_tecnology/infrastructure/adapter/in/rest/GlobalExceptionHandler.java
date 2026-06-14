@@ -2,15 +2,12 @@ package com.alexhiz.hexagonal.inventory_tecnology.infrastructure.adapter.in.rest
 
 import java.util.List;
 
+import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.AssignmentNotFoundException;
-import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.CollaboratorNotFoundException;
-import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,6 +18,26 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND, ex.getMessage()
         );
         problem.setTitle("Producto no encontrado");
+        return problem;
+    }
+
+    @ExceptionHandler(ProductWithOutStockException.class)
+    public ProblemDetail handleProductWithOutStock(ProductWithOutStockException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, ex.getMessage()
+        );
+        problem.setTitle("Producto sin stock");
+        problem.setProperty("errorCode", "PRODUCT_OUT_OF_STOCK");
+        return problem;
+    }
+
+    @ExceptionHandler(ProductInvalidStockException.class)
+    public ProblemDetail handleProductInvalidStock(ProductInvalidStockException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, ex.getMessage()
+        );
+        problem.setTitle("Producto stock invalido, stock negativo");
+        problem.setProperty("errorCode", "PRODUCT_STOCK_INVALID");
         return problem;
     }
 

@@ -11,4 +11,5 @@ public interface AssignmentRepositoryPort {
     Assignment save(Assignment assignment);
     Optional<Assignment> findById(UUID id);
     List<Assignment> findAll();
+
 }

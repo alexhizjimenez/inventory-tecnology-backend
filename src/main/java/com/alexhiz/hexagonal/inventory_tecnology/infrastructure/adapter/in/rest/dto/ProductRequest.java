@@ -11,6 +11,7 @@ public class ProductRequest {
     private String name;
     private String description;
     private String sku;
+    private Integer stock;
     private StatusProduct status;
     private CategoryProduct category;
 }

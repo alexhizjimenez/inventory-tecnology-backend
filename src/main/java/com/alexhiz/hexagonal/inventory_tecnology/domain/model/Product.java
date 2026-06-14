@@ -21,6 +21,7 @@ public class Product {
     private String name;
     private String description;
     private String sku;
+    private Integer stock;
     private StatusProduct status;
     private CategoryProduct category;
     private LocalDateTime createdAt;

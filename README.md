@@ -96,21 +96,21 @@ src
 
 ## 🔄 Flujo de Negocio
 
-1. Registrar productos en el inventario.
-2. Registrar colaboradores.
-3. Asignar productos disponibles.
-4. Reducir automáticamente el stock.
-5. Registrar devoluciones.
+1. Registrar productos en el inventario. [x]
+2. Registrar colaboradores. [x]
+3. Asignar productos disponibles. [x]
+4. Reducir automáticamente el stock. [x]
+5. Registrar devoluciones. [x]
 6. Actualizar el inventario en tiempo real.
 
 ---
 
 ## 📌 Reglas de Negocio
 
-- No se puede asignar un producto sin stock disponible.
-- El stock nunca puede ser negativo.
-- Una asignación debe estar asociada a un colaborador válido.
-- Al devolver un producto, el stock aumenta automáticamente.
+- No se puede asignar un producto sin stock disponible. [x]
+- El stock nunca puede ser negativo. [x]
+- Una asignación debe estar asociada a un colaborador válido. [x]
+- Al devolver un producto, el stock aumenta automáticamente. [x]
 - Todas las operaciones críticas son transaccionales.
 
 ---
