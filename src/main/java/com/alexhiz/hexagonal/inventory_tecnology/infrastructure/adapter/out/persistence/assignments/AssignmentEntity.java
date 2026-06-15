@@ -31,6 +31,9 @@ public class AssignmentEntity {
     @Column(name = "delivery_date", nullable = false, updatable = false)
     private LocalDateTime deliveryDate;
 
+    @Column(name = "returned_date", nullable = true)
+    private LocalDateTime returnedDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusAssignment status;

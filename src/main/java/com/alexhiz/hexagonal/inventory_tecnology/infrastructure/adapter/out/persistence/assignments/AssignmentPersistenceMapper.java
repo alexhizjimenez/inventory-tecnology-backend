@@ -19,6 +19,7 @@ public class AssignmentPersistenceMapper {
                 .product(productMapper.toEntity(assignment.getProduct()))
                 .collaborator(collaboratorMapper.toEntity(assignment.getCollaborator()))
                 .deliveryDate(assignment.getDeliveryDate())
+                .returnedDate(assignment.getReturnedDate())
                 .status(assignment.getStatus())
                 .createdAt(assignment.getCreatedAt())
                 .build();
@@ -30,6 +31,7 @@ public class AssignmentPersistenceMapper {
                 .product(productMapper.toDomain(assignmentEntity.getProduct()))
                 .collaborator(collaboratorMapper.toDomain(assignmentEntity.getCollaborator()))
                 .deliveryDate(assignmentEntity.getDeliveryDate())
+                .returnedDate(assignmentEntity.getReturnedDate())
                 .status(assignmentEntity.getStatus())
                 .createdAt(assignmentEntity.getCreatedAt())
                 .build();

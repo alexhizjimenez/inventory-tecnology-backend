@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class CollaboratorRequest {
     private String fullName;
+    private String code;
     private AreaCollaborator area;
     private PositionCollaborator position;
 }

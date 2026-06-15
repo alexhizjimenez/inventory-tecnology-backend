@@ -29,6 +29,7 @@ public class CollaboratorController {
     private ResponseEntity<CollaboratorResponse> createCollaborator(@Valid  @RequestBody CollaboratorRequest collaboratorRequest) {
         Collaborator collaborator = Collaborator.builder()
                 .fullName(collaboratorRequest.getFullName())
+                .code(collaboratorRequest.getCode())
                 .area(collaboratorRequest.getArea())
                 .position(collaboratorRequest.getPosition())
                 .build();

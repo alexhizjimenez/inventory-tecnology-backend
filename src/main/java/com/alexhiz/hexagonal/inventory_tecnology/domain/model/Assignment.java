@@ -21,6 +21,7 @@ public class Assignment {
     private Product product;
     private Collaborator collaborator;
     private LocalDateTime deliveryDate;
+    private LocalDateTime returnedDate;
     private StatusAssignment status;
     private LocalDateTime createdAt;
 }

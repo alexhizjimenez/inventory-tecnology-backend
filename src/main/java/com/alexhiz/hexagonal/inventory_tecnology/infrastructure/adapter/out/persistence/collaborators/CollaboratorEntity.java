@@ -23,9 +23,13 @@ public class CollaboratorEntity {
     @Column(length = 255, nullable = false)
     private String fullName;
 
+    @Column(nullable = false, length = 6)
+    private String code;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 255, nullable = false)
     private AreaCollaborator area;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 255, nullable = false)
     private PositionCollaborator position;
