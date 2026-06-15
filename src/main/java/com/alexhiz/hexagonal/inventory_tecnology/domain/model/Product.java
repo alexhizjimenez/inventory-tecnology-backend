@@ -25,5 +25,6 @@ public class Product {
     private StatusProduct status;
     private CategoryProduct category;
     private LocalDateTime createdAt;
+    private Long version;
 
 }
