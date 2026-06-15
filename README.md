@@ -135,13 +135,16 @@ src
 ## ⚡ Funcionalidades Avanzadas
 ## 🔒 Control de Concurrencia
 
-Para evitar inconsistencias en el inventario cuando múltiples usuarios intentan asignar simultáneamente el mismo producto, la aplicación puede implementar diferentes estrategias de control de concurrencia.
+Para evitar inconsistencias en el inventario cuando múltiples 
+usuarios intentan asignar simultáneamente el mismo producto, 
+la aplicación puede implementar diferentes estrategias de control de 
+concurrencia. 
 
 ### Estrategias disponibles
 
-* **Optimistic Locking (`@Version`)**
-* **Pessimistic Locking (`@Lock`)**
-* **Transacciones (`@Transactional`)**
+* **Optimistic Locking (`@Version`)** [✅ ]
+* **Pessimistic Locking (`@Lock`)** [x]
+* **Transacciones (`@Transactional`)** [x]
 
 ---
 
