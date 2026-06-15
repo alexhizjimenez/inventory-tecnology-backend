@@ -17,8 +17,10 @@ public class AssignmentResponse {
     private Product product;
     private Collaborator collaborator;
     private LocalDateTime deliveryDate;
+    private LocalDateTime returnedDate;
     private StatusAssignment status;
     private LocalDateTime createdAt;
+
 
     public static AssignmentResponse from(Assignment assignment) {
         return AssignmentResponse.builder()
@@ -26,6 +28,7 @@ public class AssignmentResponse {
                 .product(assignment.getProduct())
                 .collaborator(assignment.getCollaborator())
                 .deliveryDate(assignment.getDeliveryDate())
+                .returnedDate(assignment.getReturnedDate())
                 .status(assignment.getStatus())
                 .createdAt(assignment.getCreatedAt())
                 .build();
