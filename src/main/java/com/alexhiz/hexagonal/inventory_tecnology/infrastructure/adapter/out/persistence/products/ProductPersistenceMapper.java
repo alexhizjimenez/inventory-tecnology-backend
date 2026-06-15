@@ -16,6 +16,7 @@ public class ProductPersistenceMapper {
                 .category(entity.getCategory())
                 .createdAt(entity.getCreatedAt())
                 .status(entity.getStatus())
+                .version(entity.getVersion())
                 .build();
     }
 
@@ -30,6 +31,7 @@ public class ProductPersistenceMapper {
                 .category(product.getCategory())
                 .status(product.getStatus())
                 .createdAt(product.getCreatedAt())
+                .version(product.getVersion())
                 .build();
     }
 }
