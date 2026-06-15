@@ -71,25 +71,42 @@ src
 
 ### Collaborators
 
-| Campo | Tipo |
-|---------|---------|
-| id | UUID |
-| fullName | String |
-| area | String |
-| position | String |
+| Campo     | Tipo |
+|-----------|---------|
+| id        | UUID |
+| fullName  | String |
+| code      | String  [nuevo] | 
+| area      | String |
+| position  | String |
 | createdAt | LocalDateTime |
 
 ### Assignments
 
-| Campo | Tipo |
-|---------|---------|
-| id | UUID |
-| productId | UUID |
-| collaboratorId | UUID |
-| deliveryDate | LocalDate |
-| status | ACTIVE / RETURNED |
-| createdAt | LocalDateTime |
+| Campo          | Tipo                  |
+|----------------|-----------------------|
+| id             | UUID                  |
+| productId      | UUID                  |
+| collaboratorId | UUID                  |
+| deliveryDate   | LocalDateTime         |
+| returnedDate   | LocalDateTime [nuevo] |  
+| status         | String                |
+| createdAt      | LocalDateTime         |
 
+---
+#### Area
+- HR, IT, SALES, MARKETING
+
+#### Category
+-   LAPTOP, DESKTOP, MONITOR, PERIPHERAL, NETWORK_DEVICE, SERVER, STORAGE, SOFTWARE_LICENSE, MOBILE_DEVICE, ACCESSORY
+
+#### Position
+-  EMPLOYEE, MANAGER, DIRECTOR, CEO
+
+#### Status Assignment
+- ACTIVE, RETURNED
+
+#### Status Product
+- ACTIVE, INACTIVE
 
 
 ---
@@ -116,16 +133,134 @@ src
 ---
 
 ## ⚡ Funcionalidades Avanzadas
+## 🔒 Control de Concurrencia
 
-### Control de Concurrencia
+Para evitar inconsistencias en el inventario cuando múltiples usuarios intentan asignar simultáneamente el mismo producto, la aplicación puede implementar diferentes estrategias de control de concurrencia.
 
-Evita que dos usuarios asignen simultáneamente el último producto disponible.
+### Estrategias disponibles
 
-Implementaciones sugeridas:
+* **Optimistic Locking (`@Version`)**
+* **Pessimistic Locking (`@Lock`)**
+* **Transacciones (`@Transactional`)**
 
-- Optimistic Locking (`@Version`)
-- Pessimistic Locking
-- Transacciones con Spring
+---
+
+### 1. Optimistic Locking (`@Version`)
+
+Permite detectar conflictos de actualización sin bloquear registros en la base de datos.
+
+#### Implementación
+
+```java
+@Entity
+@Table(name = "products")
+public class ProductEntity {
+
+    // Otros campos...
+
+    @Version
+    private Long version;
+}
+```
+
+#### Comportamiento
+
+* Dos usuarios leen el mismo producto.
+* Ambos intentan actualizar el stock.
+* El primer usuario actualiza correctamente.
+* El segundo recibe una excepción:
+
+```java
+ObjectOptimisticLockingFailureException
+```
+
+Esta excepción puede ser gestionada desde el `GlobalExceptionHandler` para devolver un mensaje amigable al cliente.
+
+---
+
+### 2. Pessimistic Locking (`@Lock`)
+
+Bloquea físicamente el registro durante la transacción para evitar modificaciones concurrentes.
+
+#### Implementación
+
+```java
+public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT p
+        FROM ProductEntity p
+        WHERE p.id = :id
+    """)
+    Optional<ProductEntity> findByIdWithLock(UUID id);
+}
+```
+
+#### Comportamiento
+
+* La fila queda bloqueada al iniciar la operación.
+* Otras transacciones deberán esperar hasta que el bloqueo sea liberado.
+* Garantiza consistencia inmediata a costa de un mayor tiempo de espera.
+
+---
+
+### 3. Uso de Transacciones (`@Transactional`)
+
+Ambas estrategias requieren ejecutarse dentro de una transacción.
+
+#### Ejemplo
+
+```java
+@Transactional
+public Assignment create(Assignment assignment) {
+
+    Product product = productRepositoryPort.findById(
+            assignment.getProduct().getId())
+        .orElseThrow(() ->
+            new ProductNotFoundException("Product not found"));
+
+    if (product.getStock() <= 0) {
+        throw new ProductWithOutStockException(
+            "No units available");
+    }
+
+    product.setStock(product.getStock() - 1);
+
+    productRepositoryPort.save(product);
+
+    return assignmentRepositoryPort.save(assignment);
+}
+```
+
+#### Flujo
+
+1. Obtener producto.
+2. Validar stock disponible.
+3. Descontar inventario.
+4. Persistir cambios.
+5. Crear asignación.
+6. Confirmar transacción (COMMIT).
+
+---
+
+### Comparativa
+
+| Característica          | Optimistic Locking    | Pessimistic Locking       |
+| ----------------------- | --------------------- | ------------------------- |
+| Bloquea registros       | ❌                     | ✅                         |
+| Rendimiento             | Alto                  | Medio                     |
+| Escalabilidad           | Alta                  | Media                     |
+| Conflictos concurrentes | Detectados al guardar | Evitados mediante bloqueo |
+| Complejidad             | Baja                  | Media                     |
+
+---
+
+### Recomendación
+
+Para este proyecto de gestión de inventario tecnológico se recomienda utilizar **Optimistic Locking (`@Version`)**, ya que ofrece un mejor rendimiento y una implementación más sencilla para escenarios con concurrencia moderada.
+
+---
 
 ### Eventos de Inventario
 
