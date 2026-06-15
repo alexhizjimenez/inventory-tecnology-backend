@@ -19,6 +19,7 @@ public class Collaborator {
     @EqualsAndHashCode.Include
     private UUID id;
     private String fullName;
+    private String code;
     private AreaCollaborator area;
     private PositionCollaborator position;
     private LocalDateTime createdAt;

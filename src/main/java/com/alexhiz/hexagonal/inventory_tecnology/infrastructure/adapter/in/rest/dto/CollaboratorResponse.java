@@ -15,6 +15,7 @@ public class CollaboratorResponse {
 
     private UUID id;
     private String fullName;
+    private String code;
     private AreaCollaborator area;
     private PositionCollaborator position;
     private LocalDateTime createdAt;
@@ -23,6 +24,7 @@ public class CollaboratorResponse {
         return CollaboratorResponse.builder()
                 .id(collaborator.getId())
                 .fullName(collaborator.getFullName())
+                .code(collaborator.getCode())
                 .area(collaborator.getArea())
                 .position(collaborator.getPosition())
                 .createdAt(collaborator.getCreatedAt())
