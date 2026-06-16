@@ -25,3 +25,10 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "com.alexhiz.hexagonal.inventory_tecnology.domain.event"
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method # Ordena los métodos por GET, POST, etc.
+  api-docs:
+    path: /v3/api-docs
