@@ -16,6 +16,7 @@ public class ProductResponse {
     private String description;
     private String sku;
     private Integer stock;
+    private Integer minimumStock;
     private StatusProduct status;
     private CategoryProduct category;
     private LocalDateTime createdAt;
@@ -27,6 +28,7 @@ public class ProductResponse {
                 .description(product.getDescription())
                 .sku(product.getSku())
                 .stock(product.getStock())
+                .minimumStock(product.getMinimumStock())
                 .status(product.getStatus())
                 .category(product.getCategory())
                 .createdAt(product.getCreatedAt())
