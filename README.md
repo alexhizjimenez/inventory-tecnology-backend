@@ -36,7 +36,8 @@ El proyecto está diseñado siguiendo principios de:
 src
 ├── domain
 │   ├── model
-│   └── exception
+│   ├── exception
+│   └── event
 ├── application
 │   └── port
 │      └── in
@@ -45,11 +46,13 @@ src
 ├── infrastructure
 │   └── adapter
 │       └── in
+│           ├── messaging
 │           └── rest
 │               └── dto
 │       └── out
+│           ├── messaging
 │           └── persistence
-│
+│   └── config
 └── InventoryTecnologyApplication
 ```
 
@@ -59,38 +62,38 @@ src
 
 ### Products
 
-| Campo | Tipo |
-|---------|---------|
-| id | UUID |
-| name | String |
-| description | String |
-| sku | String |
-| stock | Integer |
-| category | String |
-| createdAt | LocalDateTime |
+| Campo | Tipo                 |
+|---------|----------------------|
+| id | UUID                 |
+| name | String               |
+| description | String               |
+| sku | String               |
+| stock | Integer              |
+| category | String               |
+| createdAt | LocalDateTime        |
 
 ### Collaborators
 
-| Campo     | Tipo |
-|-----------|---------|
-| id        | UUID |
-| fullName  | String |
-| code      | String  [nuevo] | 
-| area      | String |
-| position  | String |
+| Campo     | Tipo          |
+|-----------|---------------|
+| id        | UUID          |
+| fullName  | String        |
+| code      | String        | 
+| area      | String        |
+| position  | String        |
 | createdAt | LocalDateTime |
 
 ### Assignments
 
-| Campo          | Tipo                  |
-|----------------|-----------------------|
-| id             | UUID                  |
-| productId      | UUID                  |
-| collaboratorId | UUID                  |
-| deliveryDate   | LocalDateTime         |
-| returnedDate   | LocalDateTime [nuevo] |  
-| status         | String                |
-| createdAt      | LocalDateTime         |
+| Campo          | Tipo           |
+|----------------|----------------|
+| id             | UUID           |
+| productId      | UUID           |
+| collaboratorId | UUID           |
+| deliveryDate   | LocalDateTime  |
+| returnedDate   | LocalDateTime  |  
+| status         | String         |
+| createdAt      | LocalDateTime  |
 
 ---
 #### Area
@@ -118,7 +121,7 @@ src
 3. Asignar productos disponibles. [x]
 4. Reducir automáticamente el stock. [x]
 5. Registrar devoluciones. [x]
-6. Actualizar el inventario en tiempo real.
+6. Actualizar el inventario en tiempo real. [x]
 
 ---
 
@@ -269,10 +272,40 @@ Para este proyecto de gestión de inventario tecnológico se recomienda utilizar
 
 Cuando un producto alcanza un stock mínimo:
 
-- Generar alertas.
-- Publicar eventos.
-- Enviar notificaciones.
-- Integrarse con Kafka.
+- Generar alertas. [✅]
+- Publicar eventos. [✅]
+- Enviar notificaciones. [✅]
+- Integrarse con Kafka. [✅]
+- Integrarse con RabbitMQ. [✅]
+
+### 🚀 Implementación de Mensajería (Kafka & RabbitMQ)
+
+Se ha implementado una arquitectura orientada a eventos para gestionar las alertas de stock bajo cuando se realiza una asignación de producto.
+
+#### 1. Apache Kafka (Eventos de Dominio)
+Se utiliza para publicar eventos de dominio que pueden ser consumidos por otros microservicios.
+- **Tópico:** `product-low-stock`
+- **Evento:** `ProductLowStockReached`
+- **Datos enviados:** ID del producto, nombre, stock actual, umbral mínimo y fecha/hora.
+- **Componentes:**
+    - `KafkaConfig`: Configuración del productor y creación del tópico.
+    - `KafkaEventAdapter`: Implementación del puerto de salida para enviar el evento.
+
+#### 2. RabbitMQ (Notificaciones)
+Se utiliza para el envío de notificaciones directas (alertas) de stock bajo.
+- **Exchange:** `inventory-exchange` (Tipo Topic)
+- **Cola:** `low-stock-notifications`
+- **Routing Key:** `low.stock.key`
+- **Mensaje:** Cadena de texto con el detalle de la alerta.
+- **Componentes:**
+    - `RabbitMQConfig`: Definición de Exchange, Queue y Binding.
+    - `RabbitMQNotificationAdapter`: Implementación del puerto de salida para enviar la notificación.
+
+#### Flujo de Trabajo
+1. Al crear una `Assignment`, el sistema descuenta el stock del `Product`.
+2. Si el stock alcanza el nivel mínimo (`hasReachedMinimumStock()`), se disparan ambos mecanismos:
+    - Se publica un evento en **Kafka**.
+    - Se envía una notificación a través de **RabbitMQ**.
 
 ---
 
@@ -283,6 +316,8 @@ Cuando un producto alcanza un stock mínimo:
 - Spring Data JPA
 - Hibernate
 - PostgreSQL o H2 DATABASE
+- Kafka
+- RabbitMQ
 - Docker
 - Swagger/OpenAPI
 - JUnit 5
@@ -294,17 +329,24 @@ Cuando un producto alcanza un stock mínimo:
 
 ## 🚀 Ejecución Local
 
-### Clonar repositorio
+### Infraestructura con Docker
 
-```bash
-git clone https://github.com/alexhizjimenez/inventory-technology-backend.git
-```
+El proyecto incluye un archivo `docker-compose.yaml` para levantar los servicios necesarios (Kafka, RabbitMQ, etc.).
 
-### Entrar al proyecto
+1. **Levantar servicios:**
+   ```bash
+   docker-compose up -d
+   ```
 
-```bash
-cd inventory-technology-backend
-```
+2. **Servicios incluidos:**
+    - **Kafka:** Puerto `9092`
+    - **RabbitMQ:** Puerto `5672` (AMQP) y `15672` (Management UI)
+    - **Kafka UI:** Puerto `8081` (Para visualizar tópicos y mensajes)
+    - **Zookeeper:** Gestión de Kafka.
+
+3. **Accesos:**
+    - **RabbitMQ UI:** [http://localhost:15672](http://localhost:15672) (guest/guest)
+    - **Kafka UI:** [http://localhost:8081](http://localhost:8081)
 
 ### Ejecutar aplicación
 

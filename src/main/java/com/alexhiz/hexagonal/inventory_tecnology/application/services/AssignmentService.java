@@ -4,9 +4,8 @@ import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.assignment.
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.assignment.GetAssignmentUseCase;
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.assignment.ListAssignmentUseCase;
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.assignment.ReturnedAssignmentUseCase;
-import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.AssignmentRepositoryPort;
-import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.CollaboratorRepositoryPort;
-import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.ProductRepositoryPort;
+import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.*;
+import com.alexhiz.hexagonal.inventory_tecnology.domain.event.ProductLowStockReached;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.AssignmentNotFoundException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.CollaboratorNotFoundException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductNotFoundException;
@@ -30,6 +29,8 @@ public class AssignmentService implements CreateAssignmentUseCase, GetAssignment
     private final AssignmentRepositoryPort assignmentRepositoryPort;
     private final ProductRepositoryPort productRepositoryPort;
     private final CollaboratorRepositoryPort collaboratorRepositoryPort;
+    private final ProductEventPublisherPort eventPublisherPort;
+    private final NotificationPort notificationPort;
 
     @Override
     @Transactional
@@ -49,6 +50,29 @@ public class AssignmentService implements CreateAssignmentUseCase, GetAssignment
 
         product.setStock(product.getStock() - 1);
         productRepositoryPort.save(product);
+
+        if (product.hasReachedMinimumStock()) {
+            ProductLowStockReached event = new ProductLowStockReached(
+                    product.getId(),
+                    product.getName(),
+                    product.getStock(),
+                    product.getMinimumStock(),
+                    LocalDateTime.now()
+            );
+
+            // Publicar evento de dominio (Kafka)
+            eventPublisherPort.publishLowStockEvent(event);
+
+            // Enviar notificación (RabbitMQ, Email, Slack, etc.)
+            notificationPort.sendLowStockNotification(
+                    String.format(
+                            "Low stock alert. Product: %s | Current stock: %d | Minimum stock: %d",
+                            product.getName(),
+                            product.getStock(),
+                            product.getMinimumStock()
+                    )
+            );
+        }
 
         return assignmentRepositoryPort.save(assignment);
     }

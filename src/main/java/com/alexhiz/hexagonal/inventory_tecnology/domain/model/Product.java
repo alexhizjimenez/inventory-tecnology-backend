@@ -22,9 +22,17 @@ public class Product {
     private String description;
     private String sku;
     private Integer stock;
+    private Integer minimumStock;
     private StatusProduct status;
     private CategoryProduct category;
     private LocalDateTime createdAt;
     private Long version;
+
+
+    public boolean hasReachedMinimumStock() {
+        return stock != null
+                && minimumStock != null
+                && stock <= minimumStock;
+    }
 
 }

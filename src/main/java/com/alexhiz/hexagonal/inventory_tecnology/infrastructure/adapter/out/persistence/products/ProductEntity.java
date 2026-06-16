@@ -38,8 +38,10 @@ public class ProductEntity {
     private StatusProduct status;
 
     @Column(nullable = false)
-    @Min(0)
     private Integer stock;
+
+    @Column(nullable = false)
+    private Integer minimumStock;
 
     @Column(nullable = false)
     private CategoryProduct category;
