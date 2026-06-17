@@ -95,6 +95,34 @@ src
 | status         | String         |
 | createdAt      | LocalDateTime  |
 
+
+### Users
+
+| Campo     | Tipo          |
+|-----------|---------------|
+| id        | UUID          |
+| fullName  | String        |
+| email     | String        |
+| password  | String        | 
+| createdAt | LocalDateTime |
+
+
+### Roles
+
+| Campo          | Tipo          |
+|----------------|---------------|
+| id             | UUID          |
+| name           | String        |
+
+### user_roles
+
+| Campo     | Tipo          |
+|-----------|---------------|
+| user_id   | UUID          |
+| role_id   | UUID          |
+
+
+
 ---
 #### Area
 - HR, IT, SALES, MARKETING
