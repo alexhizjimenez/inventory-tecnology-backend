@@ -2,20 +2,32 @@ spring:
   application:
     name: inventory-tecnology
 
-  # Base de datos H2
+#  Base de datos H2
+#  datasource:
+#    url: jdbc:h2:mem:inventorydb
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password: password
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#  h2:
+#    console:
+#      enabled: true
+
+
   datasource:
-    url: jdbc:h2:mem:inventorydb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:postgresql://${POSTGRESQL_DB_HOST:localhost}:${POSTGRESQL_DB_PORT:5435}/${POSTGRESQL_DB:tecnology_db}
+    username: ${POSTGRESQL_DB_USERNAME:root}
+    password: ${POSTGRESQL_DB_PASSWORD:pass}
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-  h2:
-    console:
-      enabled: true
 
   # Configuración de RabbitMQ
   rabbitmq:
