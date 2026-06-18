@@ -2,6 +2,21 @@ spring:
   application:
     name: inventory-tecnology
 
+  # Base de datos H2
+  datasource:
+    url: jdbc:h2:mem:inventorydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
   # Configuración de RabbitMQ
   rabbitmq:
     host: localhost
@@ -10,7 +25,7 @@ spring:
     password: guest
     listener:
       simple:
-        auto-startup: true
+        auto-startup: false # Desactivado por defecto para evitar errores si no hay RabbitMQ
 
   # Configuración de Kafka
   kafka:
@@ -25,6 +40,11 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "com.alexhiz.hexagonal.inventory_tecnology.domain.event"
+
+security:
+  jwt:
+    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-time: 3600000 # 1 hour
 
 springdoc:
   swagger-ui:

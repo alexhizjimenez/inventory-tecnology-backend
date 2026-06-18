@@ -11,4 +11,5 @@ public interface RoleRepositoryPort {
     Role save(Role role);
     List<Role> findAll();
     Optional<Role> findById(UUID id);
+    Optional<Role>  findByName(RolesUser name);
 }
