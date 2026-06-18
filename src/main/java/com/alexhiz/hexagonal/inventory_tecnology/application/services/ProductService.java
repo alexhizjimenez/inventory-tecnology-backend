@@ -6,15 +6,13 @@ import com.alexhiz.hexagonal.inventory_tecnology.application.port.in.product.Lis
 import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.ProductRepositoryPort;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductInvalidStockException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductNotFoundException;
-import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.ProductWithOutStockException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Product;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-@Service
+
 @RequiredArgsConstructor
 public class ProductService implements CreateProductUseCase, GetProductUseCase, ListProductUseCase {
 

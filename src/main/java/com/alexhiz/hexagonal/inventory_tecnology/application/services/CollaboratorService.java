@@ -7,12 +7,11 @@ import com.alexhiz.hexagonal.inventory_tecnology.application.port.out.Collaborat
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.CollaboratorNotFoundException;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Collaborator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-@Service
+
 @RequiredArgsConstructor
 public class CollaboratorService implements CreateCollaboratorUseCase, GetCollaboratorUseCase, ListCollaboratorUseCase {
 

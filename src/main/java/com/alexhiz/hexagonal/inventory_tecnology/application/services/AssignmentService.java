@@ -16,13 +16,12 @@ import com.alexhiz.hexagonal.inventory_tecnology.domain.model.Product;
 import com.alexhiz.hexagonal.inventory_tecnology.domain.model.StatusAssignment;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+
 @RequiredArgsConstructor
 public class AssignmentService implements CreateAssignmentUseCase, GetAssignmentUseCase, ListAssignmentUseCase, ReturnedAssignmentUseCase {
 
