@@ -352,7 +352,6 @@ Se utiliza para el envío de notificaciones directas (alertas) de stock bajo.
 - Swagger/OpenAPI
 - JUnit 5
 - Mockito
-- Testcontainers
 - Maven
 
 ---
@@ -369,10 +368,11 @@ El proyecto incluye un archivo `docker-compose.yaml` para levantar los servicios
    ```
 
 2. **Servicios incluidos:**
-    - **Kafka:** Puerto `9092`
-    - **RabbitMQ:** Puerto `5672` (AMQP) y `15672` (Management UI)
-    - **Kafka UI:** Puerto `8081` (Para visualizar tópicos y mensajes)
-    - **Zookeeper:** Gestión de Kafka.
+   - **Postgres:** Puerto `5035`
+   - **Kafka:** Puerto `9092`
+   - **RabbitMQ:** Puerto `5672` (AMQP) y `15672` (Management UI)
+   - **Kafka UI:** Puerto `8081` (Para visualizar tópicos y mensajes)
+   - **Zookeeper:** Gestión de Kafka.
 
 3. **Accesos:**
     - **RabbitMQ UI:** [http://localhost:15672](http://localhost:15672) (guest/guest)
@@ -403,20 +403,6 @@ Ejecutar pruebas unitarias:
 ```bash
 ./mvnw test
 ```
-
----
-
-## 📈 Roadmap
-
-- [ ] JWT Authentication
-- [ ] Roles y permisos
-- [ ] Auditoría de cambios
-- [ ] Kafka Events
-- [ ] Dashboard de métricas
-- [ ] Reportes PDF/Excel
-- [ ] Notificaciones por correo
-- [ ] Kubernetes Deployment
-
 ---
 
 ## 🛠️ Guía de Desarrollo y Estructura (Paso a Paso)
