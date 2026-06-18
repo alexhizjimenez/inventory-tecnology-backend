@@ -47,11 +47,13 @@ src
 │   └── adapter
 │       └── in
 │           ├── messaging
-│           └── rest
-│               └── dto
+│           ├── rest
+│           │  └── dto
+│           └── security
 │       └── out
 │           ├── messaging
 │           └── persistence
+│           └── security
 │   └── config
 └── InventoryTecnologyApplication
 ```
