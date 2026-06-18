@@ -37,4 +37,10 @@ public class RolePersistenceAdapter implements RoleRepositoryPort {
                 .map(roleMapper::toDomain);
     }
 
+    @Override
+    public Optional<Role> findByName(RolesUser name) {
+        return roleRepository.findByName(name)
+                .map(roleMapper::toDomain);
+    }
+
 }

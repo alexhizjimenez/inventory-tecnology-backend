@@ -417,6 +417,122 @@ Ejecutar pruebas unitarias:
 
 ---
 
+## 🛠️ Guía de Desarrollo y Estructura (Paso a Paso)
+
+Esta sección explica cómo se construyó el proyecto siguiendo la **Arquitectura Hexagonal**, detallando la función de cada capa y el orden de implementación recomendado.
+
+### 1. Capa de Dominio (`domain`)
+Es el núcleo del sistema, contiene la lógica de negocio pura y es totalmente independiente de frameworks (Spring, Hibernate, etc.).
+
+- **`model/`**: Contiene las entidades de dominio (POJOs). Representan los conceptos del negocio (Product, Assignment, etc.).
+- **`exception/`**: Excepciones personalizadas que describen errores de negocio (ej. `ProductWithOutStockException`).
+- **`event/`**: Definición de eventos que ocurren en el dominio (ej. `ProductLowStockReached`).
+
+**¿Por qué primero?** Porque el negocio define qué hace la aplicación, no la base de datos ni la API.
+
+### 2. Capa de Aplicación (`application`)
+Orquestra el flujo de los datos y las reglas de negocio.
+
+- **`port/in/` (Input Ports)**: Interfaces que definen qué puede hacer el usuario con el sistema (Casos de Uso).
+- **`port/out/` (Output Ports)**: Interfaces que definen qué necesita el sistema de herramientas externas (Persistencia, Mensajería).
+- **`services/`**: Implementación de los casos de uso. Aquí se coordina el dominio y los puertos de salida.
+
+**Paso a paso:** 
+1. Definir la interfaz del Caso de Uso (In Port).
+2. Definir la interfaz del Repositorio (Out Port).
+3. Implementar el Servicio que usa ambas.
+
+### 3. Capa de Infraestructura (`infrastructure`)
+Contiene los detalles técnicos y las implementaciones de los puertos.
+
+- **`adapter/in/rest/`**: Controladores que exponen la API. Transforman JSON a objetos de dominio.
+- **`adapter/out/persistence/`**: Implementación de los repositorios usando Spring Data JPA.
+    - **`Entity`**: Clase que mapea a la tabla de la BD.
+    - **`Mapper`**: Clase que convierte de `Domain Model` a `Entity` y viceversa (aislamiento total).
+    - **`Adapter`**: Implementa el `Output Port` usando el repositorio de JPA.
+- **`adapter/out/messaging/`**: Implementaciones para enviar mensajes a Kafka o RabbitMQ.
+- **`config/`**: Configuraciones de Spring (Bean beans, Security, Swagger).
+
+---
+
+---
+
+## 🔐 Implementación de Spring Security & JWT (Paso a Paso)
+
+Para proteger la API y gestionar la autenticación de forma stateless, seguimos estos pasos:
+
+### 1. Dependencias Necesarias (`pom.xml`)
+Añadir `spring-boot-starter-security` y las librerías de `jjwt` (api, impl, jackson).
+
+### 2. Definir el Puerto de Salida (`application/port/out`)
+Creamos `PasswordEncoderPort` para que el dominio no dependa directamente de `BCrypt`.
+
+### 3. Implementar el Servicio de Tokens (`infrastructure/adapter/out/security`)
+- **`JwtService`**: Responsable de generar, extraer claims y validar la vigencia de los tokens JWT usando una clave secreta.
+
+### 4. Cargar Usuarios de la BD (`infrastructure/adapter/out/security`)
+- **`UserAuthenticated`**: Implementa `UserDetails` de Spring para envolver nuestra entidad de dominio `User`.
+- **`UserDetailsServiceImpl`**: Implementa `UserDetailsService`. Busca al usuario en la base de datos a través del `UserRepositoryPort`.
+
+### 5. El Filtro de Autenticación (`infrastructure/adapter/in/security`)
+- **`JwtAuthenticationFilter`**: Un filtro que extiende de `OncePerRequestFilter`.
+    - Intercepta cada petición.
+    - Extrae el token del header `Authorization: Bearer <token>`.
+    - Si el token es válido, establece la autenticación en el `SecurityContextHolder`.
+
+### 6. Configuración Global (`infrastructure/config/SecurityConfig`)
+Aquí se une todo:
+- Se deshabilita CSRF (ya que usamos JWT).
+- Se define la política de sesión como `STATELESS`.
+- Se configuran los `requestMatchers` para permitir acceso público a `/auth/**` y Swagger.
+- Se añade el `JwtAuthenticationFilter` antes del filtro estándar de Spring.
+
+### 7. Controlador de Autenticación (`infrastructure/adapter/in/rest`)
+- **`AuthController`**: Expone los endpoints `/auth/register` y `/auth/login`.
+- Llama al `AuthService`, el cual valida las credenciales y genera el token usando `JwtService`.
+
+#### 📂 Desglose de Archivos de Seguridad
+
+| Archivo | Ubicación | Propósito |
+|---|---|---|
+| `SecurityConfig` | `infrastructure/config` | Configuración central: reglas de acceso, filtros y beans de auth. |
+| `JwtAuthenticationFilter` | `infrastructure/adapter/in/security` | Filtro que valida el token en cada petición HTTP. |
+| `JwtService` | `infrastructure/adapter/out/security` | Lógica pura de JWT (generar, firmar y leer tokens). |
+| `UserAuthenticated` | `infrastructure/adapter/out/security` | Adaptador que convierte nuestro `User` en un `UserDetails` de Spring. |
+| `UserDetailsServiceImpl` | `infrastructure/adapter/out/security` | Servicio que conecta Spring Security con nuestro `UserRepositoryPort`. |
+| `BCryptPasswordEncoderAdapter` | `infrastructure/adapter/out/security` | Implementación del puerto de cifrado usando BCrypt. |
+| `AuthController` | `infrastructure/adapter/in/rest` | Controlador REST para procesos de login y registro. |
+| `AuthService` | `application/services` | Orquestador de la lógica de autenticación y registro. |
+
+---
+
+## 📂 Desglose de Archivos y su Propósito
+
+| Carpeta / Archivo | Propósito |
+|---|---|
+| `domain/model` | Objetos de negocio. No tienen anotaciones de JPA. |
+| `application/port/in` | Contratos de los casos de uso (ej. `CreateProductUseCase`). |
+| `application/port/out` | Contratos para salida de datos (ej. `ProductRepositoryPort`). |
+| `application/services` | Lógica de orquestación y transaccionalidad. |
+| `infrastructure/adapter/in/rest` | Puntos de entrada HTTP (Controllers y DTOs). |
+| `infrastructure/adapter/out/persistence` | Adaptadores de base de datos. Aquí viven las `@Entity`. |
+| `infrastructure/adapter/out/persistence/mapper` | Crucial para mantener el dominio limpio de JPA. |
+| `infrastructure/config/SecurityConfig` | Seguridad del sistema (JWT, permisos). |
+| `infrastructure/config/KafkaConfig` / `RabbitMQConfig` | Configuración de infraestructura de mensajería. |
+
+---
+
+## 🚀 Flujo de una Petición (Ejemplo: Crear Asignación)
+
+1. **Client**: Envía un JSON al `AssignmentController`.
+2. **Controller**: Convierte el `RequestDTO` a un objeto `Assignment` (dominio).
+3. **Service**: Recibe el objeto, valida reglas de negocio (ej. ¿hay stock?) usando los puertos de salida.
+4. **Persistence Adapter**: El servicio llama al `AssignmentRepositoryPort`. El adaptador mapea el dominio a una entidad de BD y la guarda.
+5. **Messaging Adapter**: Si el stock es bajo, el servicio dispara un evento a través de `ProductEventPublisherPort`.
+6. **Response**: El `Controller` recibe el resultado del servicio y devuelve un `ResponseDTO`.
+
+---
+
 ## 👨‍💻 Autor
 
 Desarrollado como proyecto de portafolio para demostrar conocimientos en:

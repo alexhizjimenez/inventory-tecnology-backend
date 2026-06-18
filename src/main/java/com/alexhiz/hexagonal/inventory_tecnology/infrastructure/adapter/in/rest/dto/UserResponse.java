@@ -8,6 +8,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -16,7 +17,7 @@ public class UserResponse {
     private String fullName;
     private String email;
     private String password;
-    private Set<Role> roles;
+    private Set<String> roles;
     private LocalDateTime createdAt;
 
     public static UserResponse from(User user) {
@@ -25,7 +26,9 @@ public class UserResponse {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRoles())
+                .roles(user.getRoles().stream()
+                        .map(role -> role.getName().name())
+                        .collect(Collectors.toSet()))
                 .createdAt(user.getCreatedAt())
                 .build();
     }
