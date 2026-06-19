@@ -29,29 +29,13 @@ public class UserService implements CreateUserUserCase, GetUserUseCase, ListUser
 
     @Override
     public User create(User user) {
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-
-            Role adminRole = roleRepositoryPort.findByName(RolesUser.ADMIN)
-                    .orElseGet(() -> roleRepositoryPort.save(
-                            Role.builder()
-                                    .name(RolesUser.ADMIN)
-                                    .build()
-                    ));
-
-            user.setRoles(Set.of(adminRole));
-
-        } else {
-
-            Set<Role> fullRoles = user.getRoles().stream()
-                    .map(role -> roleRepositoryPort.findById(role.getId())
-                            .orElseThrow(() ->
-                                    new RoleNotFoundException(
-                                            "Role not found with ID: " + role.getId())))
-                    .collect(Collectors.toSet());
-
-            user.setRoles(fullRoles);
-        }
-
+        Set<Role> fullRoles = user.getRoles().stream()
+                .map(role -> roleRepositoryPort.findById(role.getId())
+                        .orElseThrow(() ->
+                                new RoleNotFoundException(
+                                        "Role not found with ID: " + role.getId())))
+                .collect(Collectors.toSet());
+        user.setRoles(fullRoles);
         user.setPassword(passwordEncoderPort.encode(user.getPassword()));
         return userRepositoryPort.save(user);
     }
