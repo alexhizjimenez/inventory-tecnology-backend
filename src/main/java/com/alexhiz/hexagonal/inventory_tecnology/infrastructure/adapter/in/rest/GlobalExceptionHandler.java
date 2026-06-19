@@ -1,10 +1,12 @@
 package com.alexhiz.hexagonal.inventory_tecnology.infrastructure.adapter.in.rest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.alexhiz.hexagonal.inventory_tecnology.domain.exception.*;
+import com.alexhiz.hexagonal.inventory_tecnology.infrastructure.adapter.in.rest.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,67 +15,76 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ProblemDetail handleProductNotFound(ProductNotFoundException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND, ex.getMessage()
-        );
-        problem.setTitle("Producto no encontrado");
-        return problem;
+    public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value())
+                );
+        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(ProductWithOutStockException.class)
-    public ProblemDetail handleProductWithOutStock(ProductWithOutStockException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, ex.getMessage()
+    public ResponseEntity<ErrorResponse> handleProductWithOutStock(ProductWithOutStockException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value())
         );
-        problem.setTitle("Producto sin stock");
-        problem.setProperty("errorCode", "PRODUCT_OUT_OF_STOCK");
-        return problem;
+        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(ProductInvalidStockException.class)
-    public ProblemDetail handleProductInvalidStock(ProductInvalidStockException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, ex.getMessage()
+    public ResponseEntity<ErrorResponse> handleProductInvalidStock(ProductInvalidStockException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value())
         );
-        problem.setTitle("Producto stock invalido, stock negativo");
-        problem.setProperty("errorCode", "PRODUCT_STOCK_INVALID");
-        return problem;
+        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(CollaboratorNotFoundException.class)
-    public ProblemDetail handleCollaboratorNotFound(CollaboratorNotFoundException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND, ex.getMessage()
+    public ResponseEntity<ErrorResponse> handleCollaboratorNotFound(CollaboratorNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value())
         );
-        problem.setTitle("Colaborador no encontrado");
-        return problem;
+        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(AssignmentNotFoundException.class)
-    public ProblemDetail handleAssignmentNotFound(AssignmentNotFoundException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND, ex.getMessage()
+    public ResponseEntity<ErrorResponse> handleAssignmentNotFound(AssignmentNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value())
         );
-        problem.setTitle("Asignación no encontrada");
-        return problem;
+        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .toList();
-
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, "Error de validación"
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResponse response = new ErrorResponse(
+                ex.getMessage(),
+                status.getReasonPhrase(),
+                String.valueOf(status.value()),
+                errors
         );
-        problem.setTitle("Datos inválidos");
-        problem.setProperty("errors", errors);
-        return problem;
+        return ResponseEntity.status(status).body(response);
     }
 
 }
